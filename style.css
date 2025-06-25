@@ -1,0 +1,101 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-image: url('https://images.stockcake.com/public/5/5/5/55535d01-37cf-4d2d-b11b-8f78f7e62b66_large/sunset-ocean-view-stockcake.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #quiz-title {
+    font-size: 48px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.8);
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    margin-bottom: 30px;
+  }
+  
+  #start-btn, #restart-btn {
+    background-color: #00b4d8;
+    color: white;
+    padding: 20px 40px;
+    font-size: 24px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease;
+  }
+  
+  #start-btn:hover, #restart-btn:hover {
+    background-color: #0096c7;
+  }
+  
+  #quiz-container, #result-screen {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    margin: 20px;
+  }
+  
+  #question-text {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+  
+  #answer-buttons button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: #0077b6;
+    color: white;
+    transition: background-color 0.3s;
+  }
+  
+  #answer-buttons button:hover {
+    background-color: #005f87;
+  }
+  
+  .correct {
+    background-color: #2ecc71 !important;
+  }
+  
+  .wrong {
+    background-color: #e74c3c !important;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  #progress {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  @media (max-width: 600px) {
+    #quiz-title {
+      font-size: 36px;
+    }
+    #start-btn, #restart-btn {
+      font-size: 20px;
+      padding: 16px 30px;
+    }
+  }
+  
