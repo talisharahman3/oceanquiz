@@ -110,15 +110,12 @@ nextBtn.addEventListener("click", () => {
     endQuiz();
   }
 });
-
 function endQuiz() {
   document.getElementById("quiz-box").classList.add("hide");
   resultBox.classList.remove("hide");
   scoreBox.textContent = score;
 }
-
 function restartQuiz() {
   startQuiz();
 }
-
 startQuiz();
