@@ -2,34 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ocean Quiz</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="start-screen">
-    <h1 id="quiz-title">Test Your Knowledge on the Ocean</h1>
-    <button id="start-btn">Take Quiz</button>
+  <div class="wave-bg"></div>
+
+  <div class="screen" id="start-screen">
+    <h1>Test Your Ocean Knowledge</h1>
+    <button id="start-btn">Dive Into Quiz</button>
   </div>
 
-  <div id="quiz-container" class="hidden">
+  <div class="screen hidden" id="quiz-container">
     <p id="progress"></p>
-    <div id="question-box">
-      <h2 id="question-text"></h2>
-      <div id="answer-buttons"></div>
-    </div>
+    <h2 id="question-text"></h2>
+    <div id="answer-buttons"></div>
   </div>
 
-  <div id="result-screen" class="hidden">
+  <div class="screen hidden" id="result-screen">
     <h2>Your Score:</h2>
     <p id="score-display"></p>
     <div id="answer-review"></div>
     <button id="restart-btn">Restart Quiz</button>
   </div>
 
+  <button id="music-toggle" title="Toggle Music">🔇</button>
+
   <audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
   <audio id="wrongSound" src="https://www.soundjay.com/button/beep-10.mp3"></audio>
+  <audio id="bg-music" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  </audio>
 
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
