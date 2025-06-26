@@ -1,35 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Ocean Quiz</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive Quiz</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="start-screen">
-    <h1 id="quiz-title">Test Your Knowledge on the Ocean</h1>
-    <button id="start-btn">Take Quiz</button>
-  </div>
-
-  <div id="quiz-container" class="hidden">
-    <p id="progress"></p>
-    <div id="question-box">
-      <h2 id="question-text"></h2>
-      <div id="answer-buttons"></div>
+  <div class="container">
+    <h1>JavaScript Quiz</h1>
+    <div id="quiz-box">
+      <div id="question">Loading...</div>
+      <div id="options"></div>
+      <button id="next-btn">Next</button>
+    </div>
+    <div id="result-box" class="hide">
+      <h2>Your Score: <span id="score"></span>/10</h2>
+      <button onclick="restartQuiz()">Restart Quiz</button>
     </div>
   </div>
 
-  <div id="result-screen" class="hidden">
-    <h2>Your Score:</h2>
-    <p id="score-display"></p>
-    <div id="answer-review"></div>
-    <button id="restart-btn">Restart Quiz</button>
-  </div>
-
-  <audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
-  <audio id="wrongSound" src="https://www.soundjay.com/button/beep-10.mp3"></audio>
-
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti"></script>
   <script src="script.js"></script>
 </body>
 </html>
