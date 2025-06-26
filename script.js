@@ -1,111 +1,124 @@
 const questions = [
-    { question: "What is the largest ocean?", answers: ["Atlantic", "Pacific", "Indian", "Arctic"], correct: "Pacific" },
-    { question: "Which ocean surrounds Antarctica?", answers: ["Indian", "Pacific", "Atlantic", "Southern"], correct: "Southern" },
-    { question: "Which is the saltiest ocean?", answers: ["Pacific", "Atlantic", "Arctic", "Indian"], correct: "Atlantic" },
-    { question: "Which ocean is the smallest?", answers: ["Indian", "Arctic", "Southern", "Pacific"], correct: "Arctic" },
-    { question: "How much of Earth is covered by ocean?", answers: ["50%", "60%", "70%", "80%"], correct: "70%" },
-    { question: "Where is the Mariana Trench?", answers: ["Atlantic", "Southern", "Indian", "Pacific"], correct: "Pacific" },
-    { question: "What causes ocean tides?", answers: ["Wind", "Sun", "Moon", "Earthquake"], correct: "Moon" },
-    { question: "Which current is warm?", answers: ["California", "Humboldt", "Gulf Stream", "Canary"], correct: "Gulf Stream" },
-    { question: "What percent of ocean is unexplored?", answers: ["30%", "50%", "70%", "80%"], correct: "80%" },
-    { question: "Which is NOT a real ocean layer?", answers: ["Sunlight", "Twilight", "Rainbow", "Midnight"], correct: "Rainbow" }
-  ];
-  
-  let shuffledQuestions = [];
-  let currentQuestion = 0;
-  let score = 0;
-  let results = [];
-  
-  const startBtn = document.getElementById("start-btn");
-  const quizContainer = document.getElementById("quiz-container");
-  const startScreen = document.getElementById("start-screen");
-  const questionText = document.getElementById("question-text");
-  const answerButtons = document.getElementById("answer-buttons");
-  const resultScreen = document.getElementById("result-screen");
-  const scoreDisplay = document.getElementById("score-display");
-  const restartBtn = document.getElementById("restart-btn");
-  const progress = document.getElementById("progress");
-  const reviewBox = document.getElementById("answer-review");
-  
-  const correctSound = document.getElementById("correctSound");
-  const wrongSound = document.getElementById("wrongSound");
-  
-  startBtn.addEventListener("click", startQuiz);
-  restartBtn.addEventListener("click", () => location.reload());
-  
-  function startQuiz() {
-    startScreen.classList.add("hidden");
-    quizContainer.classList.remove("hidden");
-    shuffledQuestions = questions.sort(() => Math.random() - 0.5);
-    currentQuestion = 0;
-    score = 0;
-    results = [];
+  {
+    question: "What does HTML stand for?",
+    options: ["Hyperlinks and Text Markup Language", "Hyper Text Markup Language", "Home Tool Markup Language", "Hyper Trainer Marking Language"],
+    answer: 1
+  },
+  {
+    question: "Which HTML element do we put the JavaScript in?",
+    options: ["<script>", "<js>", "<javascript>", "<code>"],
+    answer: 0
+  },
+  {
+    question: "What is the correct syntax to change the content of an HTML element?",
+    options: ["#demo.innerHTML = 'Hello'", "document.getElementById('demo').innerHTML = 'Hello';", "document.getElement('demo').innerHTML = 'Hello';", "demo.innerHTML = 'Hello';"],
+    answer: 1
+  },
+  {
+    question: "How do you create a function in JavaScript?",
+    options: ["function myFunction()", "function = myFunction()", "function:myFunction()", "def myFunction()"],
+    answer: 0
+  },
+  {
+    question: "How do you call a function named 'myFunction'?",
+    options: ["call myFunction()", "myFunction()", "call function myFunction", "Call.myFunction()"],
+    answer: 1
+  },
+  {
+    question: "How can you add a comment in JavaScript?",
+    options: ["<!--Comment-->", "// Comment", "'Comment", "**Comment**"],
+    answer: 1
+  },
+  {
+    question: "How do you declare a JavaScript variable?",
+    options: ["v carName;", "var carName;", "variable carName;", "carName = var;"],
+    answer: 1
+  },
+  {
+    question: "Which operator is used to assign a value to a variable?",
+    options: ["-", "*", "=", "+"],
+    answer: 2
+  },
+  {
+    question: "What will `typeof []` return?",
+    options: ["object", "array", "list", "undefined"],
+    answer: 0
+  },
+  {
+    question: "Which event occurs when the user clicks on an HTML element?",
+    options: ["onmouseclick", "onchange", "onmouseover", "onclick"],
+    answer: 3
+  }
+];
+
+let currentIndex = 0;
+let score = 0;
+let shuffledQuestions = [];
+
+const questionBox = document.getElementById("question");
+const optionsBox = document.getElementById("options");
+const nextBtn = document.getElementById("next-btn");
+const resultBox = document.getElementById("result-box");
+const scoreBox = document.getElementById("score");
+
+function startQuiz() {
+  shuffledQuestions = questions.sort(() => 0.5 - Math.random());
+  currentIndex = 0;
+  score = 0;
+  resultBox.classList.add("hide");
+  document.getElementById("quiz-box").classList.remove("hide");
+  showQuestion();
+}
+
+function showQuestion() {
+  clearOptions();
+  const q = shuffledQuestions[currentIndex];
+  questionBox.textContent = q.question;
+
+  q.options.forEach((option, index) => {
+    const button = document.createElement("button");
+    button.textContent = option;
+    button.classList.add("option-btn");
+    button.addEventListener("click", () => selectAnswer(button, index));
+    optionsBox.appendChild(button);
+  });
+}
+
+function clearOptions() {
+  optionsBox.innerHTML = "";
+}
+
+function selectAnswer(button, selectedIndex) {
+  const correct = shuffledQuestions[currentIndex].answer;
+
+  Array.from(optionsBox.children).forEach(btn => btn.disabled = true);
+
+  if (selectedIndex === correct) {
+    button.classList.add("correct");
+    score++;
+  } else {
+    button.classList.add("incorrect");
+    optionsBox.children[correct].classList.add("correct");
+  }
+}
+
+nextBtn.addEventListener("click", () => {
+  currentIndex++;
+  if (currentIndex < shuffledQuestions.length) {
     showQuestion();
+  } else {
+    endQuiz();
   }
-  
-  function showQuestion() {
-    resetState();
-    const q = shuffledQuestions[currentQuestion];
-    q.answers = [...q.answers].sort(() => Math.random() - 0.5);
-    questionText.textContent = q.question;
-    progress.textContent = `Question ${currentQuestion + 1} of ${shuffledQuestions.length}`;
-  
-    q.answers.forEach(answer => {
-      const btn = document.createElement("button");
-      btn.textContent = answer;
-      btn.addEventListener("click", () => selectAnswer(btn, q.correct, q.question));
-      answerButtons.appendChild(btn);
-    });
-  }
-  
-  function resetState() {
-    answerButtons.innerHTML = "";
-  }
-  
-  function selectAnswer(selectedBtn, correctAnswer, questionText) {
-    const isCorrect = selectedBtn.textContent === correctAnswer;
-    if (isCorrect) {
-      selectedBtn.classList.add("correct");
-      correctSound.play();
-      score++;
-    } else {
-      selectedBtn.classList.add("wrong");
-      wrongSound.play();
-    }
-  
-    results.push({ question: questionText, selected: selectedBtn.textContent, correct: correctAnswer });
-  
-    Array.from(answerButtons.children).forEach(btn => {
-      btn.disabled = true;
-      if (btn.textContent === correctAnswer) btn.classList.add("correct");
-    });
-  
-    setTimeout(() => {
-      currentQuestion++;
-      if (currentQuestion < shuffledQuestions.length) {
-        showQuestion();
-      } else {
-        showResult();
-      }
-    }, 1000);
-  }
-  
-  function showResult() {
-    quizContainer.classList.add("hidden");
-    resultScreen.classList.remove("hidden");
-    scoreDisplay.textContent = `You got ${score} out of ${questions.length} correct!`;
-  
-    confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-    setTimeout(() => confetti({ particleCount: 100, spread: 60 }), 400);
-    setTimeout(() => confetti({ particleCount: 100, spread: 60 }), 800);
-  
-    reviewBox.innerHTML = "<h3>Question Review:</h3>";
-    results.forEach(entry => {
-      const div = document.createElement("div");
-      div.innerHTML = `<strong>Q:</strong> ${entry.question}<br>
-                       <strong>Your Answer:</strong> ${entry.selected} ${entry.selected === entry.correct ? "✅" : "❌"}<br>
-                       <strong>Correct:</strong> ${entry.correct}<hr>`;
-      reviewBox.appendChild(div);
-    });
-  }
-  
+});
+
+function endQuiz() {
+  document.getElementById("quiz-box").classList.add("hide");
+  resultBox.classList.remove("hide");
+  scoreBox.textContent = score;
+}
+
+function restartQuiz() {
+  startQuiz();
+}
+
+startQuiz();
