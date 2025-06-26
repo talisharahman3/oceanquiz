@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Quiz</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      background-image: url('https://images.stockcake.com/public/5/5/5/55535d01-37cf-4d2d-b11b-8f78f7e62b66_large/sunset-ocean-view-stockcake.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    #quiz-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: bold;
+      text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.8);
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      background-color: #00b4d8;
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      margin: 0.5rem;
+    }
+
+    .btn:hover {
+      background-color: #0096c7;
+      transform: translateY(-2px);
+    }
+
+    .quiz-screen {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 90%;
+      margin: 1rem;
+      color: #333;
+    }
+
+    #question-text {
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .answer-btn {
+      display: block;
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background-color: #0077b6;
+      color: white;
+      transition: all 0.3s;
+    }
+
+    .answer-btn:hover:not(:disabled) {
+      background-color: #005f87;
+      transform: translateY(-1px);
+    }
+
+    .correct {
+      background-color: #2ecc71 !important;
+      box-shadow: 0 0 15px #2ecc71;
+    }
+
+    .wrong {
+      background-color: #e74c3c !important;
+      box-shadow: 0 0 15px #e74c3c;
+    }
+
+    .hidden {
+      display: none;
+      opacity: 0;
+    }
+
+    #progress {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      font-weight: bold;
+      color: #0077b6;
+    }
+
+    #timer {
+      font-weight: bold;
+      color: #e74c3c;
+      margin-top: 0.5rem;
+    }
+
+    #music-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 1000;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #answer-review div {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #ddd;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .pulse {
+      animation: pulse 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+  <div id="start-screen" class="quiz-screen">
+    <h1 id="quiz-title">Test Your Ocean Knowledge</h1>
+    <button id="start-btn" class="btn">Dive Into Quiz</button>
+  </div>
+
+  <div id="quiz-container" class="quiz-screen hidden">
+    <p id="progress"></p>
+    <div id="question-box">
+      <h2 id="question-text"></h2>
+      <div id="answer-buttons"></div>
+    </div>
+  </div>
+
+  <div id="result-screen" class="quiz-screen hidden">
+    <h2>Your Score:</h2>
+    <p id="score-display"></p>
+    <div id="answer-review"></div>
+    <button id="restart-btn" class="btn">Ride the Waves Again</button>
+  </div>
+
+  <button id="music-toggle">🔇</button>
+
+  <audio id="correct-sound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
+  <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/beep-10.mp3"></audio>
+  <audio id="bg-music" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  </audio>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    // Quiz Questions
+    const questions = [
+      { 
+        question: "What is the largest ocean?", 
+        answers: ["Atlantic", "Pacific", "Indian", "Arctic"], 
+        correct: "Pacific",
+        fact: "The Pacific Ocean covers about 63 million square miles and contains more than half of the Earth's free water!"
+      },
+      { 
+        question: "Which ocean surrounds Antarctica?", 
+        answers: ["Indian", "Pacific", "Atlantic", "Southern"], 
+        correct: "Southern",
+        fact: "The Southern Ocean was officially recognized as the fifth ocean in 2000 by the International Hydrographic Organization."
+      },
+      { 
+        question: "Which is the saltiest ocean?", 
+        answers: ["Pacific", "Atlantic", "Arctic", "Indian"], 
+        correct: "Atlantic",
+        fact: "The Atlantic Ocean is the saltiest due to high evaporation rates and fewer rivers flowing into it compared to other oceans."
+      },
+      { 
+        question: "Which ocean is the smallest?", 
+        answers: ["Indian", "Arctic", "Southern", "Pacific"], 
+        correct: "Arctic",
+        fact: "The Arctic Ocean is about 1.5 times the size of the United States and is the shallowest of the world's oceans."
+      },
+      { 
+        question: "How much of Earth is covered by ocean?", 
+        answers: ["50%", "60%", "70%", "80%"], 
+        correct: "70%",
+        fact: "About 71% of Earth's surface is covered by ocean, holding about 96.5% of all Earth's water."
+      },
+      { 
+        question: "Where is the Mariana Trench located?", 
+        answers: ["Atlantic", "Southern", "Indian", "Pacific"], 
+        correct: "Pacific",
+        fact: "The Mariana Trench is the deepest part of the world's oceans, with Challenger Deep reaching about 36,000 feet deep."
+      },
+      { 
+        question: "What primarily causes ocean tides?", 
+        answers: ["Wind", "Sun", "Moon", "Earthquakes"], 
+        correct: "Moon",
+        fact: "The Moon's gravitational pull creates tidal bulges on Earth, causing the regular rise and fall of sea levels."
+      },
+      { 
+        question: "Which current is warm?", 
+        answers: ["California", "Humboldt", "Gulf Stream", "Canary"], 
+        correct: "Gulf Stream",
+        fact: "The Gulf Stream transports warm water from the Gulf of Mexico across the Atlantic, influencing weather in Europe."
+      },
+      { 
+        question: "What percent of the ocean is unexplored?", 
+        answers: ["30%", "50%", "70%", "80%"], 
+        correct: "80%",
+        fact: "Despite covering most of Earth, more than 80% of our ocean is unmapped, unobserved, and unexplored."
+      },
+      { 
+        question: "Which is NOT a real ocean zone?", 
+        answers: ["Sunlight", "Twilight", "Rainbow", "Midnight"], 
+        correct: "Rainbow",
+        fact: "Ocean zones are Sunlight (0-200m), Twilight (200-1000m), Midnight (1000m+), Abyssal, and Hadal zones."
+      }
+    ];
+
+    // DOM Elements
+    const startScreen = document.getElementById('start-screen');
+    const quizContainer = document.getElementById('quiz-container');
+    const resultScreen = document.getElementById('result-screen');
+    const questionText = document.getElementById('question-text');
+    const answerButtons = document.getElementById('answer-buttons');
+    const progressText = document.getElementById('progress');
+    const scoreDisplay = document.getElementById('score-display');
+    const reviewBox = document.getElementById('answer-review');
+    const startBtn = document.getElementById('start-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const musicToggle = document.getElementById('music-toggle');
+    
+    // Audio Elements
+    const correctSound = document.getElementById('correct-sound');
+    const wrongSound = document.getElementById('wrong-sound');
+    const bgMusic = document.getElementById('bg-music');
+
+    // Quiz Variables
+    let shuffledQuestions = [];
+    let currentQuestion = 0;
+    let score = 0;
+    let timer;
+    let results = [];
+    let musicPlaying = false;
+
+    // Initialize Quiz
+    function init() {
+      // Load audio files
+      [correctSound, wrongSound, bgMusic].forEach(audio => audio.load());
+      
+      // Set up event listeners
+      startBtn.addEventListener('click', startQuiz);
+      restartBtn.addEventListener('click', restartQuiz);
+      musicToggle.addEventListener('click', toggleMusic);
+      
+      // Try to play music (may be blocked by browser until user interaction)
+      try {
+        bgMusic.play().then(() => {
+          musicPlaying = true;
+          musicToggle.textContent = '🔊';
+        }).catch(() => {
+          musicPlaying = false;
+          musicToggle.textContent = '🔇';
+        });
+      } catch (e) {
+        console.log("Audio play failed:", e);
+      }
+    }
+
+    // Start Quiz
+    function startQuiz() {
+      startScreen.classList.add('hidden');
+      quizContainer.classList.remove('hidden');
+      shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+      currentQuestion = 0;
+      score = 0;
+      results = [];
+      showQuestion();
+    }
+
+    // Show Current Question
+    function showQuestion() {
+      resetState();
+      const question = shuffledQuestions[currentQuestion];
+      
+      // Shuffle answers
+      const shuffledAnswers = [...question.answers].sort(() => Math.random() - 0.5);
+      
+      // Update UI
+      questionText.textContent = question.question;
+      progressText.textContent = `Question ${currentQuestion + 1} of ${shuffledQuestions.length}`;
+      
+      // Create answer buttons
+      shuffledAnswers.forEach(answer => {
+        const button = document.createElement('button');
+        button.textContent = answer;
+        button.classList.add('answer-btn');
+        button.addEventListener('click', () => selectAnswer(answer, question.correct, question.question, question.fact));
+        answerButtons.appendChild(button);
+      });
+      
+      // Start timer (15 seconds per question)
+      startTimer(15);
+    }
+
+    // Start Timer for Current Question
+    function startTimer(seconds) {
+      clearInterval(timer);
+      
+      const timerDisplay = document.createElement('div');
+      timerDisplay.id = 'timer';
+      timerDisplay.textContent = `Time left: ${seconds}s`;
+      progressText.appendChild(timerDisplay);
+      
+      let timeLeft = seconds;
+      timer = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `Time left: ${timeLeft}s`;
+        
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          wrongSound.play();
+          results.push({
+            question: shuffledQuestions[currentQuestion].question,
+            selected: "Time's up!",
+            correct: shuffledQuestions[currentQuestion].correct,
+            fact: shuffledQuestions[currentQuestion].fact
+          });
+          nextQuestion();
+        }
+      }, 1000);
+    }
+
+    // Select Answer
+    function selectAnswer(selected, correct, question, fact) {
+      clearInterval(timer);
+      const isCorrect = selected === correct;
+      
+      // Play appropriate sound
+      if (isCorrect) {
+        correctSound.play();
+        score++;
+      } else {
+        wrongSound.play();
+      }
+      
+      // Disable all buttons and highlight correct/wrong answers
+      Array.from(answerButtons.children).forEach(button => {
+        button.disabled = true;
+        if (button.textContent === correct) {
+          button.classList.add('correct');
+        } else if (button.textContent === selected && !isCorrect) {
+          button.classList.add('wrong');
+        }
+        button.classList.add('pulse');
+      });
+      
+      // Store result
+      results.push({
+        question: question,
+        selected: selected,
+        correct: correct,
+        fact: fact
+      });
+      
+      // Move to next question after delay
+      setTimeout(nextQuestion, 1500);
+    }
+
+    // Move to Next Question or Show Results
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < shuffledQuestions.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    // Show Final Results
+    function showResults() {
+      quizContainer.classList.add('hidden');
+      resultScreen.classList.remove('hidden');
+      
+      // Calculate and display score
+      const percentage = Math.round((score / questions.length) * 100);
+      const highScore = localStorage.getItem('oceanQuizHighScore') || 0;
+      
+      if (score > highScore) {
+        localStorage.setItem('oceanQuizHighScore', score);
+        scoreDisplay.textContent = `🏆 ${score}/${questions.length} (${percentage}%) - New High Score!`;
+      } else {
+        scoreDisplay.textContent = `🌊 ${score}/${questions.length} (${percentage}%) (High Score: ${highScore})`;
+      }
+      
+      // Create confetti celebration
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      
+      // Show question review
+      reviewBox.innerHTML = '<h3>Quiz Review:</h3>';
+      results.forEach(result => {
+        const isCorrect = result.selected === result.correct;
+        const reviewItem = document.createElement('div');
+        reviewItem.innerHTML = `
+          <p><strong>Q:</strong> ${result.question}</p>
+          <p><strong>Your answer:</strong> ${result.selected} ${isCorrect ? '✅' : '❌'}</p>
+          <p><strong>Correct answer:</strong> ${result.correct}</p>
+          ${result.fact ? `<p class="fact">💡 ${result.fact}</p>` : ''}
+        `;
+        reviewBox.appendChild(reviewItem);
+      });
+    }
+
+    // Reset Quiz State
+    function resetState() {
+      clearInterval(timer);
+      answerButtons.innerHTML = '';
+    }
+
+    // Restart Quiz
+    function restartQuiz() {
+      resultScreen.classList.add('hidden');
+      startScreen.classList.remove('hidden');
+    }
+
+    // Toggle Background Music
+    function toggleMusic() {
+      musicPlaying = !musicPlaying;
+      musicToggle.textContent = musicPlaying ? '🔊' : '🔇';
+      if (musicPlaying) {
+        bgMusic.play().catch(e => console.log("Audio play failed:", e));
+      } else {
+        bgMusic.pause();
+      }
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
